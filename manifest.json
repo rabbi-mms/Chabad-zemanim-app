@@ -1,7 +1,7 @@
 {
   "name": "Zmanim",
   "description": "Accurate Chabad zmanim, sunrise, sunset, and halachic times with multiple opinions (AR, GRA, MA, etc.)",
-  "start_url": "/Chabad-zemanim-app/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#eeede9",
   "theme_color": "#1a1a18",
