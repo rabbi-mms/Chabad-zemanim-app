@@ -1,5 +1,6 @@
 {
   "name": "Zmanim",
+  "short_name": "Zeman",
   "description": "Accurate Chabad zmanim, sunrise, sunset, and halachic times with multiple opinions (AR, GRA, MA, etc.)",
   "start_url": "/",
   "display": "standalone",
