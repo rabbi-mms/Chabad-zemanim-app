@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zmanim</title>
-  <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&family=Noto+Sans+Hebrew:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -123,7 +123,6 @@ nav{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2)}
   </nav>
   <div class="content">
 
-
     <!-- SOLAR -->
     <div id="tab-solar" class="tab">
       <div class="clock-row" id="clockBig">--:--:--</div>
@@ -152,7 +151,6 @@ nav{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2)}
       <div id="mapBox">Map loads after location is set</div>
     </div>
 
-
     <!-- ZMANIM -->
     <div id="tab-zmanim" class="tab on">
       <div class="zm-dr">
@@ -174,7 +172,6 @@ nav{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2)}
       <button class="smb" id="smb" onclick="toggleAll()">Show all opinions ▾</button>
     </div>
 
-
     <!-- SETTINGS -->
     <div id="tab-settings" class="tab">
       <div class="sec" style="margin-top:0">Display</div>
@@ -185,7 +182,7 @@ nav{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2)}
       <div class="sec">Custom Zmanim</div>
       <div class="czf">
         <input type="text" id="czN" placeholder="Zman name (Hebrew or English)"/>
-        <input type="number" id="czA" placeholder="Sun angle (e.g. 96.5)" step="0.01"/>
+        <input type="number" id="czA" placeholder="Degrees below horizon (e.g. 6 = tzeit, 16.1 = alot)" step="0.01"/>
         <button class="btn btnp btn-full" onclick="addCZ()">Add Custom Zman</button>
       </div>
       <div class="cztags" id="czTags"></div>
@@ -198,7 +195,6 @@ nav{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2)}
       </div>
     </div>
 
-
     <!-- INFO -->
     <div id="tab-info" class="tab"><div id="infoW"></div></div>
   </div>
@@ -207,7 +203,6 @@ nav{display:flex;border-bottom:0.5px solid var(--border);background:var(--bg2)}
 const S={lat:40.7128,lon:-74.006,elev:0,date:new Date(),is24:false,showMs:true,useAtm:false,showAll:false,hidden:new Set(),custom:[]};
 const d2r=v=>v*Math.PI/180,r2d=v=>v*180/Math.PI;
 
-
 function jd(date){
   let Y=date.getUTCFullYear(),M=date.getUTCMonth()+1,D=date.getUTCDate();
   const H=date.getUTCHours()+date.getUTCMinutes()/60+date.getUTCSeconds()/3600+date.getUTCMilliseconds()/3600000;
@@ -215,7 +210,6 @@ function jd(date){
   const A=Math.floor(Y/100),B=2-A+Math.floor(A/4);
   return Math.floor(365.25*(Y+4716))+Math.floor(30.6001*(M+1))+D+H/24+B-1524.5;
 }
-
 
 function sPos(date,lat,lon){
   const JD=jd(date),JC=(JD-2451545)/36525;
@@ -239,13 +233,11 @@ function sPos(date,lat,lon){
   return{HA,dec,EqT,alt,az,ourAngle:HA<0?HA+360:HA};
 }
 
-
 function sNoon(date,lat,lon){
   const d=new Date(date);d.setUTCHours(12,0,0,0);
   for(let i=0;i<80;i++){const p=sPos(d,lat,lon);if(Math.abs(p.HA)<0.0001)break;d.setTime(d.getTime()-p.HA/15*3600000);}
   return d;
 }
-
 
 // ─── KosherJava NOAACalculator analytical formula ───────────────────────────
 // Exactly replicates Chabad.org / KosherJava results.
@@ -261,19 +253,16 @@ function sunAtZenith(noon, dec, lat, zenith, isSunrise) {
   return isSunrise ? new Date(noon.getTime() - ms) : new Date(noon.getTime() + ms);
 }
 
-
 // a2t: backward-compat wrapper using the app's 0=noon/90=sunset/270=sunrise convention
 function a2t(noon, uAng) {
   if (uAng === 0) return new Date(noon);
   const isSunrise = uAng > 180;
   const zenith = isSunrise ? 360 - uAng : uAng;
   const {dec} = sPos(noon, S.lat, S.lon);
-  return sunAtZenith(noon, dec, S.lat, S.lon, zenith, isSunrise);
+  return sunAtZenith(noon, dec, S.lat, zenith, isSunrise);
 }
 
-
 function hebDate(d){try{return new Intl.DateTimeFormat('he-IL-u-ca-hebrew',{day:'numeric',month:'long',year:'numeric'}).format(d);}catch(e){return '';}}
-
 
 function jInfo(date){
   const J={isFri:false,isSat:false,candle:false,fast:null,erevPes:false,pes:false,sukk:false,rh:false,yk:false,shav:false,chan:false,pur:false,name:''};
@@ -300,16 +289,13 @@ function jInfo(date){
   return J;
 }
 
-
 function calcZ(date){
   const lat=S.lat,lon=S.lon;
   const noon=sNoon(date,lat,lon);
   const {dec}=sPos(noon,lat,lon);
 
-
   // sz(zenith, isSunrise): exact KosherJava formula, all zenith angles in degrees
   const sz=(z,r)=>sunAtZenith(noon,dec,lat,z,r);
-
 
   // ── Dawn ─────────────────────────────────────────────────────────────────
   // Zenith = 90 + degrees-below-horizon
@@ -318,12 +304,10 @@ function calcZ(date){
   const alot_ar  = sz(106.9, true);   // Baal Hatanya (AR)   16.9° below
   const alot_gra = sz(106.1, true);   // GRA / MA            16.1° below
 
-
   // ── Misheyakir ───────────────────────────────────────────────────────────
   const mish_eid = sz(101.8, true);   // 11.8° below
   const mish_zhl = sz(101.5, true);   // 11.5° below (KJ: ZENITH_11_POINT_5)
   const mish_bb  = sz(100.2, true);   // 10.2° below (KJ: ZENITH_10_POINT_2)
-
 
   // ── Sunrise ──────────────────────────────────────────────────────────────
   // hna = netz amiti (Baal Hatanya): 1.583° below geometric (KJ: ZENITH_1_POINT_583)
@@ -331,15 +315,12 @@ function calcZ(date){
   // hnr = netz nireis: standard 90°+50′ refraction+disc (KJ: 90.8333°)
   const hnr = sz(90.8333, true);
 
-
   // ── Solar noon ───────────────────────────────────────────────────────────
   const chatzos = noon;
-
 
   // ── Sunset ───────────────────────────────────────────────────────────────
   // snr = shkiah nireis: standard 90°+50′ (matches KJ getSunset())
   const snr = sz(90.8333, false);
-
 
   // shkiah amita (Baal Hatanya): 1.583° below geometric
   let skAng=91.583;
@@ -351,7 +332,6 @@ function calcZ(date){
   }
   const sam = sz(skAng, false);
 
-
   // ── Tzeit ────────────────────────────────────────────────────────────────
   const trld = sz(95.833, false);   // Berel Levin לדרבנן
   const tar  = sz(96,     false);   // AR Default 6° below
@@ -361,10 +341,8 @@ function calcZ(date){
   const ttuk = sz(98.5,   false);   // Tukachinsky (KJ: ZENITH_8_POINT_5)
   const trt  = new Date(snr.getTime()+72*60000); // Rabbeinu Tam: fixed 72 min
 
-
   // ── MA tzeit (symmetric with alot_gra: 16.1° below) ─────────────────────
   const tma = sz(106.1, false);
-
 
   // ── Sha'ot zmaniyot ──────────────────────────────────────────────────────
   // GRA: nireis sunrise → nireis sunset  (matches Chabad.org / KJ)
@@ -373,7 +351,6 @@ function calcZ(date){
   const sh_ar  = (sam - hna) / 12;
   // MA: alot (16.1°) → tzeit (16.1°)
   const sh_ma  = (tma - alot_gra) / 12;
-
 
   // ── Shema / Shacharit / Mincha ───────────────────────────────────────────
   const shema_ma   = new Date(alot_gra.getTime()+3*sh_ma);
@@ -393,7 +370,6 @@ function calcZ(date){
   const plag_ma    = new Date(tma.getTime()     -1.25*sh_ma);
   const candle     = new Date(snr.getTime()     -18*60000);
 
-
   // ── Chatzos halailah: midpoint snr → next-day hnr ────────────────────────
   const nd=new Date(date);nd.setDate(nd.getDate()+1);
   const noon2=sNoon(nd,lat,lon);
@@ -401,12 +377,10 @@ function calcZ(date){
   const hnr2=sunAtZenith(noon2,dec2,lat,90.8333,true);
   const chl=new Date((snr.getTime()+hnr2.getTime())/2);
 
-
   // ── Erev Pesach chametz / Friday 7th hour ────────────────────────────────
   const cham_a=new Date(hna.getTime()+4*sh_ar);
   const cham_b=new Date(hna.getTime()+5*sh_ar);
   const seventh=new Date(noon.getTime()+6*3600000);
-
 
   return{alot_cn,alot_ey,alot_ar,alot_gra,mish_eid,mish_zhl,mish_bb,hna,hnr,chatzos,
     shema_ma,shema_ar,shema_gra,schar_ma,schar_ar,schar_gra,
@@ -414,7 +388,6 @@ function calcZ(date){
     candle,snr,sam,skAng,trld,tar,talt,trla,tml,ttuk,trt,chl,
     cham_a,cham_b,seventh,sh_gra,sh_ar,sh_ma,noon};
 }
-
 
 function ft(d){
   if(!d||isNaN(d.getTime()))return'—';
@@ -426,7 +399,6 @@ function ft(d){
   return o+(S.is24?'':suf);
 }
 function fd(ms){const t=Math.round(Math.abs(ms)/1000);return`${Math.floor(t/3600)}h ${String(Math.floor((t%3600)/60)).padStart(2,'0')}m ${String(t%60).padStart(2,'0')}s`;}
-
 
 function rZmanim(){
   const el=document.getElementById('zmList');
@@ -441,19 +413,18 @@ function rZmanim(){
   document.getElementById('sh-ar').textContent=fd(Z.sh_ar);
   document.getElementById('sh-ma').textContent=fd(Z.sh_ma);
 
-
   const R=(id,heb,desc,ang,t,badge='',bc='',x=false)=>({id,heb,desc,ang,t,badge,bc,x});
   const grps=[
     {lbl:'עלות השחר · Dawn',rows:[
-      R('alot_ar','עלות השחר','Alter Rebbe — Default','253.1°',Z.alot_ar),
-      R('alot_cn','עלות השחר','Alter Rebbe — Rav Chaim Notah','244°',Z.alot_cn,'','',true),
-      R('alot_ey','עלות השחר','Minhag Eretz Yisroel (Tukachinsky)','250.2°',Z.alot_ey,'','',true),
-      R('alot_gra','עלות השחר','Alter Rebbe (Other) & Gra','253.9°',Z.alot_gra,'','',true),
+      R('alot_ar','עלות השחר','Alter Rebbe — Default','16.9° below',Z.alot_ar),
+      R('alot_cn','עלות השחר','Alter Rebbe — Rav Chaim Notah','26° below',Z.alot_cn,'','',true),
+      R('alot_ey','עלות השחר','Minhag Eretz Yisroel (Tukachinsky)','19.8° below',Z.alot_ey,'','',true),
+      R('alot_gra','עלות השחר','Alter Rebbe (Other) & Gra','16.1° below',Z.alot_gra,'','',true),
     ]},
     {lbl:'משיכיר · Earliest Tallit & Tefillin',rows:[
-      R('mish_zhl','משיכיר','Zmanei Halocho LeMaaseh','258.5°',Z.mish_zhl),
-      R('mish_eid','משיכיר','Eidus LeYisroel & Nivreshes','258.2°',Z.mish_eid,'','',true),
-      R('mish_bb','משיכיר','Beis Baruch Biur Halocho — Default','259.8°',Z.mish_bb,'','',true),
+      R('mish_zhl','משיכיר','Zmanei Halocho LeMaaseh','11.5° below',Z.mish_zhl),
+      R('mish_eid','משיכיר','Eidus LeYisroel & Nivreshes','11.8° below',Z.mish_eid,'','',true),
+      R('mish_bb','משיכיר','Beis Baruch Biur Halocho — Default','10.2° below',Z.mish_bb,'','',true),
     ]},
     {lbl:'הנץ החמה · Sunrise',rows:[
       R('hna','הנץ החמה האמיתי','True Sunrise (Baal Hatanya)','1.58° below',Z.hna),
@@ -517,10 +488,9 @@ function rZmanim(){
       R('fast','תענית',`Starts: ${J.fast==='Tisha BeAv'||J.fast==='Yom Kippur'?'sunset ('+ft(Z.snr)+')':'dawn ('+ft(Z.alot_ar)+')'} · Ends: ${ft(Z.tar)}`,'',null,'Fast Day','bf'),
     ]}]:[]),
     ...(S.custom.length?[{lbl:'מנהג אישי · Custom',rows:
-      S.custom.map((cz,i)=>{let t=null;try{t=a2t(Z.noon,cz.angle);}catch(e){}return R(`cz${i}`,cz.name,`Custom — ${cz.angle}°`,`${cz.angle}°`,t);})
+      S.custom.map((cz,i)=>{let t=null;try{t=a2t(Z.noon,cz.angle);}catch(e){}return R(`cz${i}`,cz.name,`${cz.angle}° below horizon`,`${cz.angle}°`,t);})
     }]:[]),
   ];
-
 
   el.className=S.showAll?'all':'';
   el.innerHTML=grps.map(g=>{
@@ -535,9 +505,7 @@ function rZmanim(){
   }).join('');
 }
 
-
-const VIS=[['alot_cn','Dawn – Rav Chaim Notah (244°)'],['alot_ey','Dawn – Minhag EY (250.2°)'],['alot_ar','Dawn – AR Default (253.1°)'],['alot_gra','Dawn – AR Other/Gra (253.9°)'],['mish_eid','Misheyakir – Eidus (258.2°)'],['mish_zhl','Misheyakir – Zmanei Halocho (258.5°)'],['mish_bb','Misheyakir – Beis Baruch (259.8°)'],['hna','Hanetz Amiti (Baal Hatanya 1.58°)'],['hnr','Hanetz Nireis (90°50\')'],['shema_ar','Latest Shema – AR Default'],['shema_ma','Latest Shema – MA'],['shema_gra','Latest Shema – AR Other/Gra'],['schar_ar','Latest Shacharit – AR Default'],['schar_ma','Latest Shacharit – MA'],['schar_gra','Latest Shacharit – AR Other/Gra'],['chatzos','Chatzos HaYom'],['mng_ar','Mincha Gedolah – AR'],['mng_ma','Mincha Gedolah – MA'],['mng_gra','Mincha Gedolah – Gra'],['mnk_ar','Mincha Ketanah – AR'],['mnk_gra','Mincha Ketanah – Gra'],['mnk_ma','Mincha Ketanah – MA'],['plag_ar','Plag – AR'],['plag_gra','Plag – Gra'],['plag_ma','Plag – MA'],['candle','Candle Lighting'],['snr','Shkiah Nireis (90°50\')'],['sam','Shkiah Amita'],['tar','Tzeit – AR Default (96°)'],['trld','Tzeit – Berel Levin לדרבנן'],['talt','Tzeit – Altein (96.3°)'],['trla','Tzeit – Berel Levin לדאורייתא'],['tml',"Tzeit – Melamed LeHo'il"],['ttuk','Tzeit – Tukachinsky'],['trt','Tzeit – Rabbeinu Tam'],['chl','Chatzos HaLailah']];
-
+const VIS=[['alot_cn','Dawn – Rav Chaim Notah (26° below)'],['alot_ey','Dawn – Minhag EY (19.8° below)'],['alot_ar','Dawn – AR Default (16.9° below)'],['alot_gra','Dawn – AR Other/Gra (16.1° below)'],['mish_eid','Misheyakir – Eidus (11.8° below)'],['mish_zhl','Misheyakir – Zmanei Halocho (11.5° below)'],['mish_bb','Misheyakir – Beis Baruch (10.2° below)'],['hna','Hanetz Amiti (Baal Hatanya 1.58°)'],['hnr','Hanetz Nireis (90°50\')'],['shema_ar','Latest Shema – AR Default'],['shema_ma','Latest Shema – MA'],['shema_gra','Latest Shema – AR Other/Gra'],['schar_ar','Latest Shacharit – AR Default'],['schar_ma','Latest Shacharit – MA'],['schar_gra','Latest Shacharit – AR Other/Gra'],['chatzos','Chatzos HaYom'],['mng_ar','Mincha Gedolah – AR'],['mng_ma','Mincha Gedolah – MA'],['mng_gra','Mincha Gedolah – Gra'],['mnk_ar','Mincha Ketanah – AR'],['mnk_gra','Mincha Ketanah – Gra'],['mnk_ma','Mincha Ketanah – MA'],['plag_ar','Plag – AR'],['plag_gra','Plag – Gra'],['plag_ma','Plag – MA'],['candle','Candle Lighting'],['snr','Shkiah Nireis (90°50\')'],['sam','Shkiah Amita'],['tar','Tzeit – AR Default (96°)'],['trld','Tzeit – Berel Levin לדרבנן'],['talt','Tzeit – Altein (96.3°)'],['trla','Tzeit – Berel Levin לדאורייתא'],['tml',"Tzeit – Melamed LeHo'il"],['ttuk','Tzeit – Tukachinsky'],['trt','Tzeit – Rabbeinu Tam'],['chl','Chatzos HaLailah']];
 
 function bVis(){document.getElementById('visL').innerHTML=VIS.map(([id,n])=>`<div class="vr"><span>${n}</span><button class="tgl on" id="v_${id}" onclick="tVis('${id}',this)"></button></div>`).join('');}
 function tVis(id,btn){S.hidden.has(id)?S.hidden.delete(id):S.hidden.add(id);btn.classList.toggle('on',!S.hidden.has(id));rZmanim();}
@@ -548,14 +516,11 @@ function tS(k,id){S[k]=!S[k];document.getElementById(id).classList.toggle('on',S
 function tAtm(){document.getElementById('atmE').classList.toggle('on',S.useAtm);}
 async function fetchWx(){if(!S.lat||!S.lon){alert('Set location first');return;}try{const d=await(await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${S.lat}&longitude=${S.lon}&current_weather=true&hourly=surface_pressure,temperature_2m&forecast_days=1`)).json();if(d.current_weather)document.getElementById('atmT').value=Math.round(d.current_weather.temperature);if(d.hourly?.surface_pressure?.[0])document.getElementById('atmP').value=Math.round(d.hourly.surface_pressure[0]);doRender();}catch(e){alert('Weather fetch failed');}}
 
-
 function doGPS(){sLoc('Getting GPS…');navigator.geolocation.getCurrentPosition(p=>{S.lat=p.coords.latitude;S.lon=p.coords.longitude;if(p.coords.altitude){S.elev=Math.round(p.coords.altitude*3.28084);document.getElementById('elevI').value=S.elev;}sLoc(`GPS: ${S.lat.toFixed(5)}, ${S.lon.toFixed(5)}`);uMap();doRender();},e=>{sLoc('GPS unavailable: '+e.message);},{enableHighAccuracy:true,timeout:10000});}
 async function sCity(){const q=document.getElementById('cityInp').value.trim();if(!q)return;sLoc('Searching…');try{const d=await(await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`)).json();if(!d.length){sLoc('Not found');return;}S.lat=parseFloat(d[0].lat);S.lon=parseFloat(d[0].lon);sLoc(d[0].display_name.split(',').slice(0,3).join(', '));uMap();doRender();}catch(e){sLoc('Search error');}}
 function onElev(){S.elev=parseFloat(document.getElementById('elevI').value)||0;doRender();}
 function sLoc(t){document.getElementById('locLine').textContent=t;document.getElementById('locD').innerHTML=`<div class="ldot"></div><span>${t}</span>`;}
 function uMap(){if(!S.lat||!S.lon)return;document.getElementById('mapBox').innerHTML=`<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${S.lon-.05},${S.lat-.05},${S.lon+.05},${S.lat+.05}&marker=${S.lat},${S.lon}&layers=M" allowfullscreen></iframe>`;}
-
-
 
 
 function drawSunArc(ourAngle) {
@@ -564,7 +529,6 @@ function drawSunArc(ourAngle) {
   const W = cv.width, H = cv.height;
   const ctx = cv.getContext('2d');
   ctx.clearRect(0, 0, W, H);
-
 
   // Layout
   const cx = W / 2, cy = H - 18, R = H - 26;
@@ -575,7 +539,6 @@ function drawSunArc(ourAngle) {
   const colText2 = getComputedStyle(document.documentElement).getPropertyValue('--text2').trim() || '#757570';
   const colAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#1a1a18';
 
-
   // ourAngle: 0=noon,90=sunset,180=midnight,270=sunrise
   // On the arc: sunrise is left (180° on canvas), sunset is right (0° on canvas), noon is top (90°)
   // Map ourAngle → canvas arc angle:
@@ -585,7 +548,6 @@ function drawSunArc(ourAngle) {
   // formula: canvasAngle (degrees from right, CCW) = 270 - ourAngle   (mod 360), but only 0-180 is above horizon
   // We'll draw only the semicircle arc (above ground).
 
-
   // Ground line
   ctx.beginPath();
   ctx.moveTo(cx - R - 10, cy);
@@ -594,14 +556,12 @@ function drawSunArc(ourAngle) {
   ctx.lineWidth = 1;
   ctx.stroke();
 
-
   // Horizon fill (sky glow)
   // Sky gradient based on sun position
   const isAbove = ourAngle > 90 && ourAngle < 270; // daytime: noon is 0, sunset 90, sunrise 270
   // Actually above horizon: angle between 90 (sunset) going through 270 (sunrise) via 0/360 (noon) is ABOVE
   // Below: 90→180→270 is night
   const aboveHorizon = !(ourAngle >= 90 && ourAngle <= 270);
-
 
   // Sky gradient
   const skyGrad = ctx.createLinearGradient(cx, cy - R, cx, cy);
@@ -625,7 +585,6 @@ function drawSunArc(ourAngle) {
   ctx.fillStyle = skyGrad;
   ctx.fill();
 
-
   // Arc track (dashed)
   ctx.beginPath();
   ctx.arc(cx, cy, R, Math.PI, 0);
@@ -634,7 +593,6 @@ function drawSunArc(ourAngle) {
   ctx.setLineDash([3, 5]);
   ctx.stroke();
   ctx.setLineDash([]);
-
 
   // Tick marks at key angles: sunrise (270), noon (0/360), sunset (90)
   // canvas angle from right CCW: canvA = (270 - ourA) mod 360, but we use radians
@@ -647,7 +605,6 @@ function drawSunArc(ourAngle) {
     let canvRad = Math.PI - (rel / 180 * Math.PI); // PI at sunrise(left), 0 at sunset(right)
     return { x: cx + R * Math.cos(canvRad), y: cy - R * Math.sin(canvRad), rad: canvRad };
   }
-
 
   // Draw ticks for sunrise, noon, sunset
   const ticks = [{a: 270, lbl: 'Sunrise'}, {a: 0, lbl: 'Noon'}, {a: 90, lbl: 'Sunset'}];
@@ -669,11 +626,9 @@ function drawSunArc(ourAngle) {
     ctx.fillText(lbl, lblX, lblY);
   });
 
-
   // Sun position
   const sunPt = arcPoint(ourAngle);
   const sunAbove = !(ourAngle >= 90 && ourAngle <= 270);
-
 
   if (sunAbove) {
     // Glow
@@ -707,7 +662,6 @@ function drawSunArc(ourAngle) {
     ctx.restore();
   }
 
-
   // Altitude label
   ctx.fillStyle = colText2;
   ctx.font = 'bold 10px sans-serif';
@@ -715,7 +669,6 @@ function drawSunArc(ourAngle) {
   ctx.textBaseline = 'bottom';
   const angLabel = ourAngle.toFixed(1) + '°';
   ctx.fillText(angLabel, sunPt.x, sunPt.y - 11);
-
 
   // Labels at bottom: E (east=sunrise=left), W (west=sunset=right)
   ctx.fillStyle = colText3;
@@ -725,7 +678,6 @@ function drawSunArc(ourAngle) {
   ctx.textAlign = 'right';
   ctx.fillText('W', cx + R + 8, cy + 4);
 }
-
 
 function tick(){
   const now=new Date();let h=now.getHours(),m=now.getMinutes(),s=now.getSeconds(),ms=now.getMilliseconds(),suf='';
@@ -746,24 +698,31 @@ function tick(){
   }
 }
 
-
 function onDate(){const v=document.getElementById('dateI').value;if(v){const p=v.split('-');S.date=new Date(+p[0],+p[1]-1,+p[2]);}doRender();}
 function goToday(){S.date=new Date();const t=S.date;document.getElementById('dateI').value=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;doRender();}
 function toggleAll(){S.showAll=!S.showAll;document.getElementById('zmList').className=S.showAll?'all':'';document.getElementById('smb').textContent=S.showAll?'Show defaults only ▴':'Show all opinions ▾';}
 function sTab(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));document.getElementById('tab-'+id).classList.add('on');btn.classList.add('on');}
 
-
 function bInfo(){
-  const D=[['עלות השחר','Dawn',`The first light of day. Magen Avraham uses dawn (253.9°) as the start of the halachic day for proportional hours; the Alter Rebbe and Gra use hanetz. Opinions range from 244° to 253.9°.`],['משיכיר',"Misheyakir — Earliest Tallit & Tefillin",`One can "recognize his friend." The sky is light enough to distinguish blue from white, allowing one to check tzitzit and put on tefillin. Ranges 258.2°–259.8°.`],['הנץ החמה','Hanetz HaChamah — Sunrise',`Amiti (268.43°) = geometric sunrise. Nireis (269.17°) = visible sunrise with atmospheric refraction. AR Default uses amiti; Gra and AR Other use nireis. Lechatchilah, Shema and Shacharit begin now.`],['קריאת שמע','Latest Shema',`Must be recited before the 3rd proportional hour — a Torah obligation (d\'oraita). MA counts from alot; Gra from hanetz nireis; AR Default from hanetz amiti.`],['חצות היום','Chatzos HaYom — Solar Noon',`Exact solar noon — 0° in our system. Musaf must be davened before this. The sun is at its highest point.`],['מנחה','Mincha Gedolah & Mincha Ketanah',`Mincha Gedolah (6.5 sh from day-start) = earliest Mincha. Mincha Ketanah (2.5 sh before day-end) = preferred time — "when the incense was offered in the Beis HaMikdash."`],['פלג המנחה','Plag HaMincha',`1.25 sh before halachic day-end. One who accepts Shabbat by davening Maariv after plag may do so even if it is still light.`],['שקיעה','Shkiah — Sunset',`Shkiah hanireis (90.5°) = visible sunset, beginning bein hashmashos. Shkiah amita (~91.35°) = precise geometric sunset used by the Alter Rebbe for his proportional-hour day.`],['צאת הכוכבים','Tzeit HaKochavim — Nightfall',`When three medium stars are visible — definitive nightfall and end of Shabbat/Yom Tov. AR Default = 96°. Rabbeinu Tam = 72 fixed minutes after shkiah.`],['חצות הלילה','Chatzos HaLailah — Midnight',`Midpoint of the night between shkiah and next-day hanetz. Associated with Tikkun Chatzos, Kiddush Levanah, and Yetziat Mitzrayim.`],['שעה זמנית',"Sha'ah Zmanit — Proportional Hour",`Not a fixed 60 min, but 1/12 of the halachic day. Gra: hanetz nireis → shkiah nireis. AR Default: hanetz amiti → shkiah amita. MA: alot → tzeit. In summer can exceed 70 min; in winter under 50 min.`]];
+  const D=[['עלות השחר','Dawn',`The first light of day. Magen Avraham uses dawn (alot, 16.1° below horizon) as the start of the halachic day for proportional hours; the Alter Rebbe and Gra use hanetz. Opinions range from 26° below (Rav Chaim Notah) to 16.1° below (GRA/MA).`],['משיכיר',"Misheyakir — Earliest Tallit & Tefillin",`One can "recognize his friend." The sky is light enough to distinguish blue from white, allowing one to check tzitzit and put on tefillin. Ranges 258.2°–259.8°.`],['הנץ החמה','Hanetz HaChamah — Sunrise',`Amiti (1.583° below geometric horizon, Baal Hatanya) = true sunrise. Nireis (0.833° below = 90°50′ zenith, standard refraction + disc) = visible sunrise. AR Default uses amiti; Gra and AR Other use nireis. Lechatchilah, Shema and Shacharit begin now.`],['קריאת שמע','Latest Shema',`Must be recited before the 3rd proportional hour — a Torah obligation (d\'oraita). MA counts from alot; Gra from hanetz nireis; AR Default from hanetz amiti.`],['חצות היום','Chatzos HaYom — Solar Noon',`Exact solar noon — 0° in our system. Musaf must be davened before this. The sun is at its highest point.`],['מנחה','Mincha Gedolah & Mincha Ketanah',`Mincha Gedolah (6.5 sh from day-start) = earliest Mincha. Mincha Ketanah (2.5 sh before day-end) = preferred time — "when the incense was offered in the Beis HaMikdash."`],['פלג המנחה','Plag HaMincha',`1.25 sh before halachic day-end. One who accepts Shabbat by davening Maariv after plag may do so even if it is still light.`],['שקיעה','Shkiah — Sunset',`Shkiah nireis (90°50′ zenith = 0.833° below horizon, standard refraction + disc) = visible sunset, beginning bein hashmashos. Shkiah amita (91.583° zenith = 1.583° below, Baal Hatanya) = true geometric sunset used for AR proportional-hour day.`],['צאת הכוכבים','Tzeit HaKochavim — Nightfall',`When three medium stars are visible — definitive nightfall and end of Shabbat/Yom Tov. AR Default = 96°. Rabbeinu Tam = 72 fixed minutes after shkiah.`],['חצות הלילה','Chatzos HaLailah — Midnight',`Midpoint of the night between shkiah and next-day hanetz. Associated with Tikkun Chatzos, Kiddush Levanah, and Yetziat Mitzrayim.`],['שעה זמנית',"Sha'ah Zmanit — Proportional Hour",`Not a fixed 60 min, but 1/12 of the halachic day. Gra: hanetz nireis → shkiah nireis. AR Default: hanetz amiti → shkiah amita. MA: alot → tzeit. In summer can exceed 70 min; in winter under 50 min.`]];
   document.getElementById('infoW').innerHTML=D.map(([heb,name,body])=>`<div class="ib"><div class="ih">${heb}</div><h3>${name}</h3><p>${body}</p></div>`).join('');
 }
 
-
-function doRender(){document.getElementById('hebDate').textContent=hebDate(S.date);rZmanim();}
-
+function doRender(){
+  // Keep S.date tracking the current local date (handles midnight rollover)
+  const now=new Date(),tod=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const sd=S.date;
+  if(sd.getFullYear()===tod.getFullYear()&&sd.getMonth()===tod.getMonth()&&sd.getDate()===tod.getDate()){
+    S.date=tod; // re-anchor to midnight in case clock crossed UTC midnight
+  }
+  document.getElementById('hebDate').textContent=hebDate(S.date);
+  rZmanim();
+}
 
 function init(){
-  const t=new Date();document.getElementById('dateI').value=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+  const t=new Date();
+  S.date=new Date(t.getFullYear(),t.getMonth(),t.getDate()); // local midnight — prevents sNoon computing wrong day
+  document.getElementById('dateI').value=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
   bVis();bInfo();doRender();
   if(navigator.geolocation){sLoc('Detecting GPS…');navigator.geolocation.getCurrentPosition(p=>{S.lat=p.coords.latitude;S.lon=p.coords.longitude;if(p.coords.altitude){S.elev=Math.round(p.coords.altitude*3.28084);document.getElementById('elevI').value=S.elev;}sLoc(`GPS: ${S.lat.toFixed(5)}, ${S.lon.toFixed(5)}`);uMap();doRender();},()=>{sLoc('New York, NY (default)');uMap();doRender();},{enableHighAccuracy:true,timeout:8000});}
   tick();setInterval(tick,50);setInterval(doRender,10000);
