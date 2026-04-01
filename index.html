@@ -4,23 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zmanim</title>
-const CACHE = 'zmanim-v1';
-const FILES = ['/Chabad-zemanim-app/', '/Chabad-zemanim-app/index.html'];
-
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
-});
-
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-});
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="manifest" href="manifest.json">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a1a1a">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&family=Noto+Sans+Hebrew:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -744,11 +732,6 @@ function init(){
   tick();setInterval(tick,50);setInterval(doRender,10000);
 }
 document.addEventListener('DOMContentLoaded',init);
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/Chabad-zemanim-app/sw.js');
-}
 </script>
 </body>
 </html>
