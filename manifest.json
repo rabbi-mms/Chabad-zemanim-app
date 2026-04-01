@@ -1,12 +1,22 @@
 {
-  "name": "Chabad Zemanim",
-  "short_name": "זמנים",
-  "start_url": "/Chabad-zemanim-app/",
+  "name": "Zmanim",
+  "short_name": "Zeman",
+  "description": "Accurate Chabad zmanim, sunrise, sunset, and halachic times with multiple opinions (AR, GRA, MA, etc.)",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1a1a1a",
+  "background_color": "#eeede9",
+  "theme_color": "#1a1a18",
+  "orientation": "portrait",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
